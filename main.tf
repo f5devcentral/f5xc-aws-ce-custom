@@ -119,10 +119,10 @@ resource "aws_eip" "f5xc_ce_az3_outside" {
 resource "aws_instance" "f5xc_ce_az1" {
   ami           = var.amis[var.aws_region]
   instance_type = var.instance_type
-  root_block_device {
-    volume_size = var.instance_disk_size
-    volume_type = "gp3"
-  }
+  #root_block_device {
+  #  volume_size = var.instance_disk_size
+  #  volume_type = "gp3"
+  #}
   get_password_data = false
   monitoring        = false
   availability_zone = var.az1
@@ -153,10 +153,10 @@ resource "aws_instance" "f5xc_ce_az1" {
 resource "aws_instance" "f5xc_ce_az2" {
   ami           = var.amis[var.aws_region]
   instance_type = var.instance_type
-  root_block_device {
-    volume_size = var.instance_disk_size
-    volume_type = "gp3"
-  }
+  #root_block_device {
+  #  volume_size = var.instance_disk_size
+  #  volume_type = "gp3"
+  #}
   get_password_data = false
   monitoring        = false
   availability_zone = var.az2
@@ -187,10 +187,10 @@ resource "aws_instance" "f5xc_ce_az2" {
 resource "aws_instance" "f5xc_ce_az3" {
   ami           = var.amis[var.aws_region]
   instance_type = var.instance_type
-  root_block_device {
-    volume_size = var.instance_disk_size
-    volume_type = "gp3"
-  }
+  #root_block_device {
+  #  volume_size = var.instance_disk_size
+  #  volume_type = "gp3"
+  #}
   get_password_data = false
   monitoring        = false
   availability_zone = var.az3

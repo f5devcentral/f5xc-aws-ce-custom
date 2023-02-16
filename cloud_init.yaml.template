@@ -5,7 +5,7 @@ write_files:
       # IPv4 and IPv6 localhost aliases
       127.0.0.1           localhost
       ::1                 localhost
-      127.0.1.1   vip
+      127.0.0.1           vip
     permissions: 0644
     owner: root
     encoding: text/plain
@@ -29,4 +29,4 @@ write_files:
       Kubernetes:
         CloudProvider: ""
         EtcdUseTLS: True
-        Server: vip  
+        Server: vip
