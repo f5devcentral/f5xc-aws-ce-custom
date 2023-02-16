@@ -1,0 +1,32 @@
+#cloud-config
+write_files:
+  - path: /etc/hosts
+    content: |
+      # IPv4 and IPv6 localhost aliases
+      127.0.0.1           localhost
+      ::1                 localhost
+      127.0.1.1   vip
+    permissions: 0644
+    owner: root
+    encoding: text/plain
+  - path: /etc/vpm/config.yaml
+    permissions: 0644
+    owner: root
+    encoding: text/plain
+    content: |
+      Vpm:
+        ClusterName: ${clustername}
+        ClusterType: ce
+        Token: ${sitetoken}
+        InsideNIC: 
+        PrivateNIC: 
+        Latitude: ${sitelatitude}
+        Longitude: ${sitelongitude}
+        MauricePrivateEndpoint: https://register-tls.ves.volterra.io
+        MauriceEndpoint: https://register.ves.volterra.io
+        CertifiedHardwareEndpoint: https://vesio.blob.core.windows.net/releases/certified-hardware/aws.yml
+
+      Kubernetes:
+        CloudProvider: ""
+        EtcdUseTLS: True
+        Server: vip  
