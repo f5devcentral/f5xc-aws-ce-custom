@@ -2,6 +2,13 @@ variable "aws_region" {
   type = string
 }
 
+variable "aws_access_key" {
+  type = string
+}
+
+variable "aws_secret_key" {
+  type = string
+}
 variable "az1" {
   type = string
 }
@@ -58,13 +65,13 @@ variable "az3_inside_subnet_id" {
 }
 
 variable "outside_security_group" {
-    type = string
-    description = "The Security Group ID for the outside interfaces"
+  type        = string
+  description = "The Security Group ID for the outside interfaces"
 }
 
 variable "inside_security_group" {
-    type = string
-    description = "The Security Group ID for the inside interfaces"
+  type        = string
+  description = "The Security Group ID for the inside interfaces"
 }
 
 

@@ -1,10 +1,33 @@
 provider "aws" {
-  region = var.aws_region
+  region     = var.aws_region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
 }
 
 # Create Random ID to Append to Builds to Avoid Naming Conflicts
 resource "random_id" "buildSuffix" {
   byte_length = 2
+}
+
+resource "tls_private_key" "newkey" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_sensitive_file" "newkey_pem" {
+  # create a new local ssh identity
+  filename        = "${abspath(path.root)}/.ssh/${var.project_prefix}-key-${random_id.buildSuffix.hex}.pem"
+  content         = tls_private_key.newkey.private_key_pem
+  file_permission = "0400"
+}
+
+resource "aws_key_pair" "deployer" {
+  # create a new AWS ssh identity
+  key_name   = "${var.project_prefix}-key-${random_id.buildSuffix.hex}"
+  public_key = tls_private_key.newkey.public_key_openssh
+  tags = {
+    Owner = var.resourceOwner
+  }
 }
 
 # Create Network Interfaces for Customer Edges
@@ -117,8 +140,9 @@ resource "aws_eip" "f5xc_ce_az3_outside" {
 }
 
 resource "aws_instance" "f5xc_ce_az1" {
-  ami           = var.amis[var.aws_region]
-  instance_type = var.instance_type
+  ami                  = var.amis[var.aws_region]
+  instance_type        = var.instance_type
+  iam_instance_profile = aws_iam_instance_profile.xc_ec2_profile.name
   #root_block_device {
   #  volume_size = var.instance_disk_size
   #  volume_type = "gp3"
@@ -133,7 +157,8 @@ resource "aws_instance" "f5xc_ce_az1" {
       sitetoken     = "${var.sitetoken}",
       clustername   = "${var.clustername}",
       sitelatitude  = "${var.sitelatitude}",
-      sitelongitude = "${var.sitelongitude}"
+      sitelongitude = "${var.sitelongitude}",
+      sitesshrsakey = "${tls_private_key.newkey.private_key_pem}"
     }
   )
 
@@ -150,70 +175,72 @@ resource "aws_instance" "f5xc_ce_az1" {
   }
 }
 
-resource "aws_instance" "f5xc_ce_az2" {
-  ami           = var.amis[var.aws_region]
-  instance_type = var.instance_type
-  #root_block_device {
-  #  volume_size = var.instance_disk_size
-  #  volume_type = "gp3"
-  #}
-  get_password_data = false
-  monitoring        = false
-  availability_zone = var.az2
-
-  user_data_replace_on_change = true
-  user_data = templatefile("${path.module}/cloud_init.yaml.template",
-    {
-      sitetoken     = "${var.sitetoken}",
-      clustername   = "${var.clustername}",
-      sitelatitude  = "${var.sitelatitude}",
-      sitelongitude = "${var.sitelongitude}"
-    }
-  )
-
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az2_outside.id
-    device_index         = 0
-  }
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az2_inside.id
-    device_index         = 1
-  }
-  tags = {
-    Name = "${var.project_prefix}-master-1"
-  }
-}
-
-resource "aws_instance" "f5xc_ce_az3" {
-  ami           = var.amis[var.aws_region]
-  instance_type = var.instance_type
-  #root_block_device {
-  #  volume_size = var.instance_disk_size
-  #  volume_type = "gp3"
-  #}
-  get_password_data = false
-  monitoring        = false
-  availability_zone = var.az3
-
-  user_data_replace_on_change = true
-  user_data = templatefile("${path.module}/cloud_init.yaml.template",
-    {
-      sitetoken     = "${var.sitetoken}",
-      clustername   = "${var.clustername}",
-      sitelatitude  = "${var.sitelatitude}",
-      sitelongitude = "${var.sitelongitude}"
-    }
-  )
-
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az3_outside.id
-    device_index         = 0
-  }
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az3_inside.id
-    device_index         = 1
-  }
-  tags = {
-    Name = "${var.project_prefix}-master-2"
-  }
-}
+#resource "aws_instance" "f5xc_ce_az2" {
+#  ami           = var.amis[var.aws_region]
+#  instance_type = var.instance_type
+#  #root_block_device {
+#  #  volume_size = var.instance_disk_size
+#  #  volume_type = "gp3"
+#  #}
+#  get_password_data = false
+#  monitoring        = false
+#  availability_zone = var.az2
+#
+#  user_data_replace_on_change = true
+#  user_data = templatefile("${path.module}/cloud_init.yaml.template",
+#    {
+#      sitetoken     = "${var.sitetoken}",
+#      clustername   = "${var.clustername}",
+#      sitelatitude  = "${var.sitelatitude}",
+#      sitelongitude = "${var.sitelongitude}",
+#      sitesshrsakey = "${tls_private_key.newkey.private_key_pem}"
+#    }
+#  )
+#
+#  network_interface {
+#    network_interface_id = aws_network_interface.f5xc_ce_az2_outside.id
+#    device_index         = 0
+#  }
+#  network_interface {
+#    network_interface_id = aws_network_interface.f5xc_ce_az2_inside.id
+#    device_index         = 1
+#  }
+#  tags = {
+#    Name = "${var.project_prefix}-master-1"
+#  }
+#}
+#
+#resource "aws_instance" "f5xc_ce_az3" {
+#  ami           = var.amis[var.aws_region]
+#  instance_type = var.instance_type
+#  #root_block_device {
+#  #  volume_size = var.instance_disk_size
+#  #  volume_type = "gp3"
+#  #}
+#  get_password_data = false
+#  monitoring        = false
+#  availability_zone = var.az3
+#
+#  user_data_replace_on_change = true
+#  user_data = templatefile("${path.module}/cloud_init.yaml.template",
+#    {
+#      sitetoken     = "${var.sitetoken}",
+#      clustername   = "${var.clustername}",
+#      sitelatitude  = "${var.sitelatitude}",
+#      sitelongitude = "${var.sitelongitude}",
+#      sitesshrsakey = "${tls_private_key.newkey.private_key_pem}"
+#    }
+#  )
+#
+#  network_interface {
+#    network_interface_id = aws_network_interface.f5xc_ce_az3_outside.id
+#    device_index         = 0
+#  }
+#  network_interface {
+#    network_interface_id = aws_network_interface.f5xc_ce_az3_inside.id
+#    device_index         = 1
+#  }
+#  tags = {
+#    Name = "${var.project_prefix}-master-2"
+#  }
+#}

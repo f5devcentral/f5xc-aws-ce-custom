@@ -1,11 +1,13 @@
 #cloud-config
+ssh_authorized_keys:
+  - "ssh-rsa ${sitesshrsakey}"
 write_files:
   - path: /etc/hosts
     content: |
       # IPv4 and IPv6 localhost aliases
       127.0.0.1           localhost
       ::1                 localhost
-      127.0.0.1           vip
+      127.0.1.1           vip
     permissions: 0644
     owner: root
     encoding: text/plain
@@ -18,8 +20,6 @@ write_files:
         ClusterName: ${clustername}
         ClusterType: ce
         Token: ${sitetoken}
-        InsideNIC: 
-        PrivateNIC: 
         Latitude: ${sitelatitude}
         Longitude: ${sitelongitude}
         MauricePrivateEndpoint: https://register-tls.ves.volterra.io
