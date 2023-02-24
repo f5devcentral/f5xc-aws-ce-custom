@@ -44,41 +44,36 @@ Customer AWS deployments vary greatly from one customer to the next.  Utilizing 
 | ce3_inside_subnet_id" | OPTIONAL: The AWS subnet ID for the inside subnet of Customer Edge 3 | string | "" |
 | outside_security_group | REQUIRED: The AWS security group ID for the outside interfaces | string | |
 | inside_security_group | REQUIRED: The AWS security group ID for the inside interfaces | string | |
-| amis | REQUIRED: The AWS amis for the Customer Edge image | map(any) |  ca-central-1 = ami-052252c245ff77338<br>af-south-1 = ami-0c22728f79f714ed1<br>ap-east-1 = ami-0a6cf3665c0612f91<br>ap-northeast-2 = ami-01472d819351faf92<br>ap-southeast-2 = ami-03ff18dfb7f90eb54<br>ap-south-1 = ami-0277ab0b4db359c93<br>ap-northeast-1 = ami-0384d075a36447e2a<br>ap-southeast-1 = ami-0d6463ee1e3727e84<br>eu-central-1 = ami-06d5e0073d97ecf99
-    "eu-west-1"      = "ami-090680f491ad6d46a"
-    "eu-west-3"      = "ami-03bd7c41ca1b586a8"
-    "eu-south-1"     = "ami-0baafa10ffcd081b7"
-    "eu-north-1"     = "ami-006c465449ed98c69"
-    "eu-west-2"      = "ami-0df8a483722043a41"
-    "me-south-1"     = "ami-094efc1a78169dd7c"
-    "sa-east-1"      = "ami-07369c4b06cf22299"
-    "us-east-1"      = "ami-089311edbe1137720"
-    "us-east-2"      = "ami-01ba94b5a83adcb35"
-    "us-west-1"      = "ami-092a2a07d2d3a445f"
-    "us-west-2"      = "ami-07252e5ab4023b8cf"
-|
+| amis | REQUIRED: The AWS amis for the Customer Edge image | map(any) |  ca-central-1 = ami-052252c245ff77338<br>af-south-1 = ami-0c22728f79f714ed1<br>ap-east-1 = ami-0a6cf3665c0612f91<br>ap-northeast-2 = ami-01472d819351faf92<br>ap-southeast-2 = ami-03ff18dfb7f90eb54<br>ap-south-1 = ami-0277ab0b4db359c93<br>ap-northeast-1 = ami-0384d075a36447e2a<br>ap-southeast-1 = ami-0d6463ee1e3727e84<br>eu-central-1 = ami-06d5e0073d97ecf99<br>eu-west-1 = ami-090680f491ad6d46a<br>eu-west-3 = ami-03bd7c41ca1b586a8<br>eu-south-1 = ami-0baafa10ffcd081b7<br>eu-north-1 = ami-006c465449ed98c69<br>eu-west-2 = ami-0df8a483722043a41<br>me-south-1 = ami-094efc1a78169dd7c<br>sa-east-1 = ami-07369c4b06cf22299<br>us-east-1 = ami-089311edbe1137720<br>us-east-2 = ami-01ba94b5a83adcb35<br>us-west-1 = ami-092a2a07d2d3a445f<br>us-west-2 = ami-07252e5ab4023b8cf|
 | instance_type | REQUIRED: The AWS instance type for the Customer Edge | string | t3.xlarge |
+| instance_disk_size | OPTIONAL: The AWS disk size for the Customer Edge | string |40 |
+| sitelatitude | REQUIRED: Site Physical Location Latitude. See https://www.latlong.net/ | string | |
+| sitelongitude | REQUIRED: Site Physical Location Longitude. See https://www.latlong.net/ | string | |
+| clustername | REQUIRED: Customer Edge site cluster name. | string | |
+| sitetoken | REQUIRED: Distributed Cloud Customer Edge site registration token | string | |
 
+## Outputs
+| Name | Description |
+| f5xc_ce1_eip | Customer Edge 1 external public IP |
+| f5xc_ce1_outside_ip | Customer Edge 1 outside private IP |
+| f5xc_ce2_eip | Customer Edge 2 external public IP |
+| f5xc_ce2_outside_ip | Customer Edge 2 outside private IP |
+| f5xc_ce3_eip | Customer Edge 3 external public IP |
+| f5xc_ce3_outside_ip | Customer Edge 3 outside private IP |
 
-variable "instance_disk_size" {
-  description = "OPTIONAL: The AWS disk size for the Customer Edge"
-  type        = string
-  default     = "40"
-}
-variable "sitelatitude" {
-  description = "REQUIRED: Site Physical Location Latitude. See https://www.latlong.net/"
-  type        = string
-}
-variable "sitelongitude" {
-  description = "REQUIRED: Site Physical Location Longitude. See https://www.latlong.net/"
-  type        = string
-}
-variable "clustername" {
-  description = "REQUIRED: Customer Edge site cluster name."
-  type        = string
-}
-variable "sitetoken" {
-  description = "REQUIRED: Distributed Cloud Customer Edge site registration token."
-  type        = string
-  sensitive   = true
-}
+## Deployment
+For deployment you can use the traditional terraform commands.
+
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+## Destruction
+
+For destruction / tear down you can use the trafitional terraform commands.
+
+```bash
+terraform destroy
+```
