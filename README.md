@@ -26,7 +26,7 @@ Customer AWS deployments vary greatly from one customer to the next.  Utilizing 
 
 ## Inputs
 | Name | Description | Type | Default |
-|------|-------------|------|---------|
+|------|-------------|------|---------------------|
 | aws_region | REQUIRED: AWS Region to deploy the Customer Edge into | string | |
 |aws_access_key | REQUIRED: AWS programatic access key | string | |
 | aws_secret_key | REQUIRED: AWS programatic secret key | string | |
