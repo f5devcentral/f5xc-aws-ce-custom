@@ -44,16 +44,7 @@ Customer AWS deployments vary greatly from one customer to the next.  Utilizing 
 | ce3_inside_subnet_id" | OPTIONAL: The AWS subnet ID for the inside subnet of Customer Edge 3 | string | "" |
 | outside_security_group | REQUIRED: The AWS security group ID for the outside interfaces | string | |
 | inside_security_group | REQUIRED: The AWS security group ID for the inside interfaces | string | |
-| amis | REQUIRED: The AWS amis for the Customer Edge image | map(any) |  
-    "ca-central-1"   = "ami-052252c245ff77338"
-    "af-south-1"     = "ami-0c22728f79f714ed1"
-    "ap-east-1"      = "ami-0a6cf3665c0612f91"
-    "ap-northeast-2" = "ami-01472d819351faf92"
-    "ap-southeast-2" = "ami-03ff18dfb7f90eb54"
-    "ap-south-1"     = "ami-0277ab0b4db359c93"
-    "ap-northeast-1" = "ami-0384d075a36447e2a"
-    "ap-southeast-1" = "ami-0d6463ee1e3727e84"
-    "eu-central-1"   = "ami-06d5e0073d97ecf99"
+| amis | REQUIRED: The AWS amis for the Customer Edge image | map(any) |  ca-central-1 = ami-052252c245ff77338<br>af-south-1 = ami-0c22728f79f714ed1<br>ap-east-1 = ami-0a6cf3665c0612f91<br>ap-northeast-2 = ami-01472d819351faf92<br>ap-southeast-2 = ami-03ff18dfb7f90eb54<br>ap-south-1 = ami-0277ab0b4db359c93<br>ap-northeast-1 = ami-0384d075a36447e2a<br>ap-southeast-1 = ami-0d6463ee1e3727e84<br>eu-central-1 = ami-06d5e0073d97ecf99
     "eu-west-1"      = "ami-090680f491ad6d46a"
     "eu-west-3"      = "ami-03bd7c41ca1b586a8"
     "eu-south-1"     = "ami-0baafa10ffcd081b7"
