@@ -16,6 +16,7 @@ Customer AWS deployments vary greatly from one customer to the next.  Utilizing 
 ## Requirements
 
 | Name | Version |
+|------|---------|
 | terraform | ~> 1.3.0 |
 
 ## Providers
@@ -26,7 +27,7 @@ Customer AWS deployments vary greatly from one customer to the next.  Utilizing 
 
 ## Inputs
 | Name | Description | Type | Default |
-|------|-------------|------|---------------------|
+|------|-------------|------|---------|
 | aws_region | REQUIRED: AWS Region to deploy the Customer Edge into | string | |
 |aws_access_key | REQUIRED: AWS programatic access key | string | |
 | aws_secret_key | REQUIRED: AWS programatic secret key | string | |
@@ -54,6 +55,7 @@ Customer AWS deployments vary greatly from one customer to the next.  Utilizing 
 
 ## Outputs
 | Name | Description |
+|------|-------------|
 | f5xc_ce1_eip | Customer Edge 1 external public IP |
 | f5xc_ce1_outside_ip | Customer Edge 1 outside private IP |
 | f5xc_ce2_eip | Customer Edge 2 external public IP |
