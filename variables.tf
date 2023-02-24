@@ -1,87 +1,104 @@
 variable "aws_region" {
-  type = string
+  description = "REQUIRED: AWS Region to deploy the Customer Edge into"
+  type        = string
 }
 
 variable "aws_access_key" {
-  type = string
+  description = "REQUIRED: AWS programatic access key"
+  type        = string
 }
 
 variable "aws_secret_key" {
-  type = string
-}
-variable "az1" {
-  type = string
-}
-
-variable "az2" {
-  type = string
-}
-
-variable "az3" {
-  type = string
+  description = "REQUIRED: AWS programatic secret key"
+  type        = string
 }
 
 variable "f5xc_ce_gateway_multi_node" {
-  type    = bool
-  default = false
+  description = "OPTIONAL: Set to true to deploy a 3 node cluster of Customer Edges"
+  type        = bool
+  default     = false
+}
+variable "az1" {
+  description = "OPTIONAL: AWS availability zone to deploy first Customer Edge into"
+  type        = string
+  default     = ""
+}
+
+variable "az2" {
+  description = "OPTIONAL: AWS availability zone to deploy second Customer Edge into"
+  type        = string
+  default     = ""
+}
+
+variable "az3" {
+  description = "OPTIONAL: AWS availability zone to deploy third Customer Edge into"
+  type        = string
+  default     = ""
 }
 
 variable "project_prefix" {
-  type    = string
-  default = "demo"
+  description = "OPTIONAL: Provide a project name prefix that will be applied"
+  type        = string
+  default     = "demo"
 }
 
 variable "resourceOwner" {
   # used for "owner" tags in AWS
+  description = "OPTIONAL: Provide owner of the deployment for tagging purposes"
   type        = string
-  description = "Owner of the deployment for tagging purposes"
   default     = "demo.user"
 }
 
-variable "az1_outside_subnet_id" {
+variable "ce1_outside_subnet_id" {
+  description = "REQUIRED: The AWS subnet ID for the outside subnet of Customer Edge 1"
   type        = string
-  description = "The subnet ID for the outside subnet in Availability Zone 1"
 }
 
-variable "az1_inside_subnet_id" {
+variable "ce1_inside_subnet_id" {
+  description = "REQUIRED: The AWS subnet ID for the inside subnet of Customer Edge 1"
   type        = string
-  description = "The subnet ID for the inside subnet in Availability Zone 1"
 }
 
 
-variable "az2_outside_subnet_id" {
+variable "ce2_outside_subnet_id" {
+  description = "OPTIONAL: The AWS subnet ID for the outside subnet of Customer Edge 2"
   type        = string
-  description = "The subnet ID for the outside subnet in Availability Zone 2"
+  default     = ""
 }
 
-variable "az2_inside_subnet_id" {
+variable "ce2_inside_subnet_id" {
+  description = "OPTIONAL: The AWS subnet ID for the inside subnet of Customer Edge 2"
   type        = string
-  description = "The subnet ID for the inside subnet in Availability Zone 2"
+  default     = ""
 }
 
-variable "az3_outside_subnet_id" {
+variable "ce3_outside_subnet_id" {
+  description = "OPTIONAL: The AWS subnet ID for the outside subnet of Customer Edge 3"
   type        = string
-  description = "The subnet ID for the outside subnet in Availability Zone 3"
+  default     = ""
 }
 
-variable "az3_inside_subnet_id" {
+variable "ce3_inside_subnet_id" {
+  description = "OPTIONAL: The AWS subnet ID for the inside subnet of Customer Edge 3"
   type        = string
-  description = "The subnet ID for the inside subnet in Availability Zone 3"
+  default     = ""
+
 }
 
 variable "outside_security_group" {
+  description = "REQUIRED: The AWS security group ID for the outside interfaces"
   type        = string
-  description = "The Security Group ID for the outside interfaces"
 }
 
 variable "inside_security_group" {
+  description = "REQUIRED: The AWS security group ID for the inside interfaces"
   type        = string
-  description = "The Security Group ID for the inside interfaces"
 }
 
 
 variable "amis" {
-  type = map(any)
+  description = "REQUIRED: The AWS amis for the Customer Edge image"
+  type        = map(any)
   default = {
     "ca-central-1"   = "ami-052252c245ff77338"
     "af-south-1"     = "ami-0c22728f79f714ed1"
@@ -107,28 +124,30 @@ variable "amis" {
 }
 
 variable "instance_type" {
-  type    = string
-  default = "t3.xlarge"
+  description = "REQUIRED: The AWS instance type for the Customer Edge"
+  type        = string
+  default     = "t3.xlarge"
 }
 
 variable "instance_disk_size" {
-  type    = string
-  default = "40"
+  description = "OPTIONAL: The AWS disk size for the Customer Edge"
+  type        = string
+  default     = "40"
 }
 variable "sitelatitude" {
-  type        = string
   description = "REQUIRED: Site Physical Location Latitude. See https://www.latlong.net/"
+  type        = string
 }
 variable "sitelongitude" {
-  type        = string
   description = "REQUIRED: Site Physical Location Longitude. See https://www.latlong.net/"
+  type        = string
 }
 variable "clustername" {
+  description = "REQUIRED: Customer Edge site cluster name."
   type        = string
-  description = "REQUIRED: Site Cluster Name."
 }
 variable "sitetoken" {
+  description = "REQUIRED: Distributed Cloud Customer Edge site registration token."
   type        = string
   sensitive   = true
-  description = "REQUIRED: Site Registration Token."
 }

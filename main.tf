@@ -31,123 +31,123 @@ resource "aws_key_pair" "deployer" {
 }
 
 # Create Network Interfaces for Customer Edges
-resource "aws_network_interface" "f5xc_ce_az1_inside" {
-  subnet_id                 = var.az1_inside_subnet_id
+resource "aws_network_interface" "f5xc_ce1_inside" {
+  subnet_id                 = var.ce1_inside_subnet_id
   private_ips_count         = 1
   security_groups           = [var.inside_security_group]
   source_dest_check         = false
   private_ip_list_enabled   = false
   ipv6_address_list_enabled = false
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az1_inside-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-f5xc_ce1_inside-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_network_interface" "f5xc_ce_az1_outside" {
-  subnet_id                 = var.az1_outside_subnet_id
+resource "aws_network_interface" "f5xc_ce1_outside" {
+  subnet_id                 = var.ce1_outside_subnet_id
   private_ips_count         = 1
   security_groups           = [var.outside_security_group]
   source_dest_check         = false
   private_ip_list_enabled   = false
   ipv6_address_list_enabled = false
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az1_outside-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-f5xc_ce1_outside-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_eip" "f5xc_ce_az1_outside" {
+resource "aws_eip" "f5xc_ce1_outside" {
   vpc                       = true
-  network_interface         = aws_network_interface.f5xc_ce_az1_outside.id
-  associate_with_private_ip = aws_network_interface.f5xc_ce_az1_outside.private_ip
+  network_interface         = aws_network_interface.f5xc_ce1_outside.id
+  associate_with_private_ip = aws_network_interface.f5xc_ce1_outside.private_ip
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az1_outside_eipd-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-f5xc_ce1_outside_eipd-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_network_interface" "f5xc_ce_az2_inside" {
+resource "aws_network_interface" "f5xc_ce2_inside" {
   count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  subnet_id                 = var.az2_inside_subnet_id
+  subnet_id                 = var.ce2_inside_subnet_id != "" ? var.ce2_inside_subnet_id : var.ce1_inside_subnet_id
   private_ips_count         = 1
   security_groups           = [var.inside_security_group]
   source_dest_check         = false
   private_ip_list_enabled   = false
   ipv6_address_list_enabled = false
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az2_inside-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-f5xc_ce2_inside-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_network_interface" "f5xc_ce_az2_outside" {
+resource "aws_network_interface" "f5xc_ce2_outside" {
   count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  subnet_id                 = var.az2_outside_subnet_id
+  subnet_id                 = var.ce2_outside_subnet_id != "" ? var.ce2_outside_subnet_id : var.ce1_outside_subnet_id
   private_ips_count         = 1
   security_groups           = [var.outside_security_group]
   source_dest_check         = false
   private_ip_list_enabled   = false
   ipv6_address_list_enabled = false
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az2_outside-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-f5xc_ce2_outside-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_eip" "f5xc_ce_az2_outside" {
+resource "aws_eip" "f5xc_ce2_outside" {
   count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
   vpc                       = true
-  network_interface         = aws_network_interface.f5xc_ce_az2_outside[0].id
-  associate_with_private_ip = aws_network_interface.f5xc_ce_az2_outside[0].private_ip
+  network_interface         = aws_network_interface.f5xc_ce2_outside[0].id
+  associate_with_private_ip = aws_network_interface.f5xc_ce2_outside[0].private_ip
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az2_outside_eipd-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-f5xc_ce2_outside_eipd-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_network_interface" "f5xc_ce_az3_inside" {
+resource "aws_network_interface" "f5xc_ce3_inside" {
   count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  subnet_id                 = var.az3_inside_subnet_id
+  subnet_id                 = var.ce3_inside_subnet_id != "" ? var.ce3_inside_subnet_id : var.ce1_inside_subnet_id
   private_ips_count         = 1
   security_groups           = [var.inside_security_group]
   source_dest_check         = false
   private_ip_list_enabled   = false
   ipv6_address_list_enabled = false
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az3_inside-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-f5xc_ce3_inside-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_network_interface" "f5xc_ce_az3_outside" {
+resource "aws_network_interface" "f5xc_ce3_outside" {
   count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  subnet_id                 = var.az3_outside_subnet_id
+  subnet_id                 = var.ce3_outside_subnet_id != "" ? var.ce3_outside_subnet_id : var.ce1_outside_subnet_id
   private_ips_count         = 1
   security_groups           = [var.outside_security_group]
   source_dest_check         = false
   private_ip_list_enabled   = false
   ipv6_address_list_enabled = false
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az3_outside-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-f5xc_ce_ce3_outside-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_eip" "f5xc_ce_az3_outside" {
+resource "aws_eip" "f5xc_ce3_outside" {
   count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
   vpc                       = true
-  network_interface         = aws_network_interface.f5xc_ce_az3_outside[0].id
-  associate_with_private_ip = aws_network_interface.f5xc_ce_az3_outside[0].private_ip
+  network_interface         = aws_network_interface.f5xc_ce3_outside[0].id
+  associate_with_private_ip = aws_network_interface.f5xc_ce3_outside[0].private_ip
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce_az3_outside_eipd-${random_id.buildSuffix.hex}"
     Owner = var.resourceOwner
   }
 }
 
-resource "aws_instance" "f5xc_ce_az1" {
-  ami                  = var.amis[var.aws_region]
-  instance_type        = var.instance_type
+resource "aws_instance" "f5xc_ce1" {
+  ami           = var.amis[var.aws_region]
+  instance_type = var.instance_type
   root_block_device {
     volume_size = var.instance_disk_size
     volume_type = "gp3"
@@ -168,11 +168,11 @@ resource "aws_instance" "f5xc_ce_az1" {
   )
 
   network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az1_outside.id
+    network_interface_id = aws_network_interface.f5xc_ce1_outside.id
     device_index         = 0
   }
   network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az1_inside.id
+    network_interface_id = aws_network_interface.f5xc_ce1_inside.id
     device_index         = 1
   }
   tags = {
@@ -180,8 +180,8 @@ resource "aws_instance" "f5xc_ce_az1" {
   }
 }
 
-resource "aws_instance" "f5xc_ce_az2" {
-  count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
+resource "aws_instance" "f5xc_ce2" {
+  count         = var.f5xc_ce_gateway_multi_node ? 1 : 0
   ami           = var.amis[var.aws_region]
   instance_type = var.instance_type
   root_block_device {
@@ -204,11 +204,11 @@ resource "aws_instance" "f5xc_ce_az2" {
   )
 
   network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az2_outside[0].id
+    network_interface_id = aws_network_interface.f5xc_ce2_outside[0].id
     device_index         = 0
   }
   network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az2_inside[0].id
+    network_interface_id = aws_network_interface.f5xc_ce2_inside[0].id
     device_index         = 1
   }
   tags = {
@@ -216,8 +216,8 @@ resource "aws_instance" "f5xc_ce_az2" {
   }
 }
 
-resource "aws_instance" "f5xc_ce_az3" {
-  count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
+resource "aws_instance" "f5xc_ce3" {
+  count         = var.f5xc_ce_gateway_multi_node ? 1 : 0
   ami           = var.amis[var.aws_region]
   instance_type = var.instance_type
   root_block_device {
@@ -240,11 +240,11 @@ resource "aws_instance" "f5xc_ce_az3" {
   )
 
   network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az3_outside[0].id
+    network_interface_id = aws_network_interface.f5xc_ce3_outside[0].id
     device_index         = 0
   }
   network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce_az3_inside[0].id
+    network_interface_id = aws_network_interface.f5xc_ce3_inside[0].id
     device_index         = 1
   }
   tags = {
