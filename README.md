@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Customer AWS deployments vary greatly from one customer to the next.  Utilizing Terraform deployments can be custom built to meet the desired requirements.  This solution uses Terraform to deploy either a single node F5 Distributed Cloud Customer Edge or a three node F5 Distributed Cloud cluster into an existing AWS environment.
+Customer AWS deployments vary greatly from one customer to the next.  Utilizing Terraform, deployments can be custom built to meet the desired requirements.  This solution uses Terraform to deploy either a single node F5 Distributed Cloud Customer Edge or a three node F5 Distributed Cloud cluster into an existing AWS environment.
 
 ## Prerequisites
 - **Important**: Customer Edges must be deployed using programatic access (Access Key and Secret Access Key). Customer Edges can not be deployed utilizing AWS Security Token Service (STS).
