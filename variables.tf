@@ -21,6 +21,11 @@ variable "az3" {
   type = string
 }
 
+variable "f5xc_ce_gateway_multi_node" {
+  type    = bool
+  default = false
+}
+
 variable "project_prefix" {
   type    = string
   default = "demo"
