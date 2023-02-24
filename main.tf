@@ -26,7 +26,7 @@ resource "aws_key_pair" "deployer" {
   key_name   = "${var.project_prefix}-key-${random_id.buildSuffix.hex}"
   public_key = tls_private_key.newkey.public_key_openssh
   tags = {
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -40,7 +40,7 @@ resource "aws_network_interface" "f5xc_ce1_inside" {
   ipv6_address_list_enabled = false
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce1_inside-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -53,7 +53,7 @@ resource "aws_network_interface" "f5xc_ce1_outside" {
   ipv6_address_list_enabled = false
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce1_outside-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -63,7 +63,7 @@ resource "aws_eip" "f5xc_ce1_outside" {
   associate_with_private_ip = aws_network_interface.f5xc_ce1_outside.private_ip
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce1_outside_eipd-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -77,7 +77,7 @@ resource "aws_network_interface" "f5xc_ce2_inside" {
   ipv6_address_list_enabled = false
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce2_inside-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -91,7 +91,7 @@ resource "aws_network_interface" "f5xc_ce2_outside" {
   ipv6_address_list_enabled = false
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce2_outside-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -102,7 +102,7 @@ resource "aws_eip" "f5xc_ce2_outside" {
   associate_with_private_ip = aws_network_interface.f5xc_ce2_outside[0].private_ip
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce2_outside_eipd-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -116,7 +116,7 @@ resource "aws_network_interface" "f5xc_ce3_inside" {
   ipv6_address_list_enabled = false
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce3_inside-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -130,7 +130,7 @@ resource "aws_network_interface" "f5xc_ce3_outside" {
   ipv6_address_list_enabled = false
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce_ce3_outside-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 
@@ -141,7 +141,7 @@ resource "aws_eip" "f5xc_ce3_outside" {
   associate_with_private_ip = aws_network_interface.f5xc_ce3_outside[0].private_ip
   tags = {
     Name  = "${var.project_prefix}-f5xc_ce_az3_outside_eipd-${random_id.buildSuffix.hex}"
-    Owner = var.resourceOwner
+    Owner = var.resource_owner
   }
 }
 

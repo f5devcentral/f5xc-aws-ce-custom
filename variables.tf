@@ -42,8 +42,7 @@ variable "project_prefix" {
   default     = "demo"
 }
 
-variable "resourceOwner" {
-  # used for "owner" tags in AWS
+variable "resource_owner" {
   description = "OPTIONAL: Provide owner of the deployment for tagging purposes"
   type        = string
   default     = "demo.user"
