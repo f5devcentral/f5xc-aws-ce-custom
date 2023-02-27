@@ -98,6 +98,7 @@ Temporary Items
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
+.ssh
 
 # Gradle
 .idea/**/gradle.xml
