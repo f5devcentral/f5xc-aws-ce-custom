@@ -32,7 +32,7 @@ resource "aws_key_pair" "deployer" {
 
 # Create IAM policy
 resource "aws_iam_policy" "f5xc_iam_policy" {
-  name = "f5xc_iam_policy"
+  name = "f5xc_iam_policy_${random_id.buildSuffix.hex}"
   path = "/"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -109,7 +109,7 @@ resource "aws_iam_policy" "f5xc_iam_policy" {
 
 # Create a role
 resource "aws_iam_role" "f5xc_role" {
-  name = "ec2_role"
+  name = "f5xc_role_${random_id.buildSuffix.hex}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     "Statement" = [
@@ -127,14 +127,14 @@ resource "aws_iam_role" "f5xc_role" {
 
 # Attach role to policy
 resource "aws_iam_policy_attachment" "f5xc_policy_role" {
-  name = "f5xc_policy_role"
+  name = "f5xc_policy_role_${random_id.buildSuffix.hex}"
   roles = [aws_iam_role.f5xc_role.name]
   policy_arn = aws_iam_policy.f5xc_iam_policy.arn
 }
 
 # Attach role to an instance profile
 resource "aws_iam_instance_profile" "f5xc_profile" {
-  name = "f5xc_profile"
+  name = "f5xc_profile_${random_id.buildSuffix.hex}"
   role = aws_iam_role.f5xc_role.name
 }
 # Create Network Interfaces for Customer Edges
