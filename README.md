@@ -31,6 +31,7 @@ Customer AWS deployments vary greatly from one customer to the next.  Utilizing 
 | aws_region                 | REQUIRED: AWS Region to deploy the Customer Edge into                    | string   |                                      |
 | aws_access_key             | REQUIRED: AWS programatic access key                                     | string   |                                      |
 | aws_secret_key             | REQUIRED: AWS programatic secret key                                     | string   |                                      |
+| ves-io-creator-id          | REQUIRED: E-mail address for object creator                              | string   |                                      |
 | f5xc_ce_gateway_multi_node | OPTIONAL: Set to true to deploy a 3 node cluster of Customer Edges. False deploys a single node.       | bool     | false                                |
 | az1                        | OPTIONAL: AWS availability zone to deploy first Customer Edge into       | string   | ""                                   |
 | az2                        | OPTIONAL: AWS availability zone to deploy second Customer Edge into      | string   | ""                                   |

@@ -13,6 +13,11 @@ variable "aws_secret_key" {
   type        = string
 }
 
+variable "ves-io-creator-id" {
+  description = "REQUIRED: E-mail address for object creator"
+  type        = string
+}
+
 variable "f5xc_ce_gateway_multi_node" {
   description = "OPTIONAL: Set to true to deploy a 3 node cluster of Customer Edges"
   type        = bool
