@@ -24,7 +24,7 @@ Customer AWS deployments vary greatly from one customer to the next.  Utilizing 
 
 | Name | Version |
 |------|---------|
-| aws | ~> 4.0 |
+| aws | ~> 5.0.1 |
 
 ## Inputs
 | Name                       | Description | Type | Default |
