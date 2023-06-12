@@ -2,11 +2,8 @@ provider "aws" {
   region     = var.aws_region
   access_key = var.aws_access_key
   secret_key = var.aws_secret_key
-  default_tags {
-    tags = {
-      ves-io-creator-id = var.ves-io-creator-id
-      owner = var.resource_owner
-    }
+  default_tags { 
+    tags = var.default_tags
   }
 }
 
@@ -35,7 +32,8 @@ resource "aws_key_pair" "deployer" {
 
 # Create IAM policy
 resource "aws_iam_policy" "f5xc_iam_policy" {
-  name = "f5xc_iam_policy_${random_id.buildSuffix.hex}"
+  count = var.create_iam_role ? 1 : 0
+  name = "${var.f5xc_ce_iam_role_name}_policy"
   path = "/"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -112,7 +110,8 @@ resource "aws_iam_policy" "f5xc_iam_policy" {
 
 # Create a role
 resource "aws_iam_role" "f5xc_role" {
-  name = "f5xc_role_${random_id.buildSuffix.hex}"
+  count = var.create_iam_role ? 1 : 0
+  name = "${var.f5xc_ce_iam_role_name}"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     "Statement" = [
@@ -130,235 +129,101 @@ resource "aws_iam_role" "f5xc_role" {
 
 # Attach role to policy
 resource "aws_iam_policy_attachment" "f5xc_policy_role" {
-  name       = "f5xc_policy_role_${random_id.buildSuffix.hex}"
-  roles      = [aws_iam_role.f5xc_role.name]
-  policy_arn = aws_iam_policy.f5xc_iam_policy.arn
+  count = var.create_iam_role ? 1 : 0
+  name = "${var.f5xc_ce_iam_role_name}"
+  roles = [aws_iam_role.f5xc_role[0].name]
+  policy_arn = aws_iam_policy.f5xc_iam_policy[0].arn
 }
 
 # Attach role to an instance profile
 resource "aws_iam_instance_profile" "f5xc_profile" {
-  name = "f5xc_profile_${random_id.buildSuffix.hex}"
-  role = aws_iam_role.f5xc_role.name
+  count = var.create_iam_role ? 1 : 0
+  name  = "${var.f5xc_ce_iam_role_name}"
+  role  = aws_iam_role.f5xc_role[0].name
 }
+
+
+
+
 # Create Network Interfaces for Customer Edges
-resource "aws_network_interface" "f5xc_ce1_inside" {
-  subnet_id                 = var.ce1_inside_subnet_id
+resource "aws_network_interface" "inside_map" {
+  for_each = {
+    for k, v in var.ce_settings : k => v
+    if var.f5xc_ce_gateway_multi_nic 
+  }
+  subnet_id = each.value.inside_subnet_arn
   private_ips_count         = 1
   security_groups           = [var.inside_security_group]
   source_dest_check         = false
   private_ip_list_enabled   = false
   ipv6_address_list_enabled = false
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce1_inside-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-${each.key}_inside-${random_id.buildSuffix.hex}"
   }
 }
-
-resource "aws_network_interface" "f5xc_ce1_outside" {
-  subnet_id                 = var.ce1_outside_subnet_id
+resource "aws_network_interface" "outside_map" {
+  for_each = var.ce_settings
+  subnet_id = each.value.outside_subnet_arn
   private_ips_count         = 1
   security_groups           = [var.outside_security_group]
   source_dest_check         = false
   private_ip_list_enabled   = false
   ipv6_address_list_enabled = false
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce1_outside-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-${each.key}_outside-${random_id.buildSuffix.hex}"
   }
 }
-
-resource "aws_eip" "f5xc_ce1_outside" {
+resource "aws_eip" "outside_eip_map" {
+  for_each = {
+    for k, v in var.ce_settings : k => v
+    if var.f5xc_ce_gateway_multi_nic 
+  }
   domain                    = "vpc"
-  network_interface         = aws_network_interface.f5xc_ce1_outside.id
-  associate_with_private_ip = aws_network_interface.f5xc_ce1_outside.private_ip
+  network_interface         = aws_network_interface.outside_map["${each.key}"].id
+  associate_with_private_ip = aws_network_interface.outside_map["${each.key}"].private_ip
   tags = {
-    Name  = "${var.project_prefix}-f5xc_ce1_outside_eipd-${random_id.buildSuffix.hex}"
+    Name  = "${var.project_prefix}-${each.key}_outside_eipd-${random_id.buildSuffix.hex}"
   }
 }
 
-resource "aws_network_interface" "f5xc_ce2_inside" {
-  count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  subnet_id                 = var.ce2_inside_subnet_id != "" ? var.ce2_inside_subnet_id : var.ce1_inside_subnet_id
-  private_ips_count         = 1
-  security_groups           = [var.inside_security_group]
-  source_dest_check         = false
-  private_ip_list_enabled   = false
-  ipv6_address_list_enabled = false
-  tags = {
-    Name  = "${var.project_prefix}-f5xc_ce2_inside-${random_id.buildSuffix.hex}"
-  }
-}
-
-resource "aws_network_interface" "f5xc_ce2_outside" {
-  count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  subnet_id                 = var.ce2_outside_subnet_id != "" ? var.ce2_outside_subnet_id : var.ce1_outside_subnet_id
-  private_ips_count         = 1
-  security_groups           = [var.outside_security_group]
-  source_dest_check         = false
-  private_ip_list_enabled   = false
-  ipv6_address_list_enabled = false
-  tags = {
-    Name  = "${var.project_prefix}-f5xc_ce2_outside-${random_id.buildSuffix.hex}"
-  }
-}
-
-resource "aws_eip" "f5xc_ce2_outside" {
-  count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  domain                    = "vpc"
-  network_interface         = aws_network_interface.f5xc_ce2_outside[0].id
-  associate_with_private_ip = aws_network_interface.f5xc_ce2_outside[0].private_ip
-  tags = {
-    Name  = "${var.project_prefix}-f5xc_ce2_outside_eipd-${random_id.buildSuffix.hex}"
-  }
-}
-
-resource "aws_network_interface" "f5xc_ce3_inside" {
-  count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  subnet_id                 = var.ce3_inside_subnet_id != "" ? var.ce3_inside_subnet_id : var.ce1_inside_subnet_id
-  private_ips_count         = 1
-  security_groups           = [var.inside_security_group]
-  source_dest_check         = false
-  private_ip_list_enabled   = false
-  ipv6_address_list_enabled = false
-  tags = {
-    Name  = "${var.project_prefix}-f5xc_ce3_inside-${random_id.buildSuffix.hex}"
-  }
-}
-
-resource "aws_network_interface" "f5xc_ce3_outside" {
-  count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  subnet_id                 = var.ce3_outside_subnet_id != "" ? var.ce3_outside_subnet_id : var.ce1_outside_subnet_id
-  private_ips_count         = 1
-  security_groups           = [var.outside_security_group]
-  source_dest_check         = false
-  private_ip_list_enabled   = false
-  ipv6_address_list_enabled = false
-  tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_ce3_outside-${random_id.buildSuffix.hex}"
-  }
-}
-
-resource "aws_eip" "f5xc_ce3_outside" {
-  count                     = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  domain                    = "vpc"
-  network_interface         = aws_network_interface.f5xc_ce3_outside[0].id
-  associate_with_private_ip = aws_network_interface.f5xc_ce3_outside[0].private_ip
-  tags = {
-    Name  = "${var.project_prefix}-f5xc_ce_az3_outside_eipd-${random_id.buildSuffix.hex}"
-  }
-}
-
-resource "aws_instance" "f5xc_ce1" {
-  ami                  = var.amis[var.aws_region]
-  instance_type        = var.instance_type
-  iam_instance_profile = aws_iam_instance_profile.f5xc_profile.name
+resource "aws_instance" "ce_map" {
+  for_each = var.ce_settings
+  ami           = var.f5xc_ce_gateway_multi_nic ? var.aws_region_config[var.aws_region]["multinic_ami"] : var.aws_region_config[var.aws_region]["singlenic_ami"]
+  instance_type = var.instance_type
+  iam_instance_profile = var.create_iam_role ? aws_iam_instance_profile.f5xc_profile[0].name : var.f5xc_ce_iam_role_name
   root_block_device {
     volume_size = var.instance_disk_size
     volume_type = "gp3"
   }
   get_password_data = false
   monitoring        = false
-  availability_zone = var.az1
+  availability_zone = each.value.availability_zone
+  key_name = "${aws_key_pair.deployer.key_name}"
 
   user_data_replace_on_change = true
   user_data = templatefile("${path.module}/cloud_init.yaml.template",
     {
       sitetoken     = "${var.sitetoken}",
       clustername   = "${var.clustername}",
-      sitelatitude  = "${var.sitelatitude}",
-      sitelongitude = "${var.sitelongitude}",
-      sitesshrsakey = "${tls_private_key.newkey.private_key_pem}"
+      sitelatitude  =  var.sitelatitude == "" ? var.aws_region_config[var.aws_region]["lattiude"] : var.sitelatitude,
+      sitelongitude =  var.sitelongitude =="" ? var.aws_region_config[var.aws_region]["longitude"] : var.sitelongitude,
+      sitesshrsakey = "${aws_key_pair.deployer.public_key}"
     }
   )
 
   network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce1_outside.id
+    network_interface_id = aws_network_interface.outside_map["${each.key}"].id
     device_index         = 0
   }
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce1_inside.id
-    device_index         = 1
-  }
-  tags = {
-    Name                                       = "${var.project_prefix}-master-0"
-    "kubernetes.io/cluster/${var.clustername}" = "owned"
-    ves-io-site-name                           = "${var.clustername}"
-  }
-}
-
-resource "aws_instance" "f5xc_ce2" {
-  count                = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  ami                  = var.amis[var.aws_region]
-  instance_type        = var.instance_type
-  iam_instance_profile = aws_iam_instance_profile.f5xc_profile.name
-
-  root_block_device {
-    volume_size = var.instance_disk_size
-    volume_type = "gp3"
-  }
-  get_password_data = false
-  monitoring        = false
-  availability_zone = var.az2
-
-  user_data_replace_on_change = true
-  user_data = templatefile("${path.module}/cloud_init.yaml.template",
-    {
-      sitetoken     = "${var.sitetoken}",
-      clustername   = "${var.clustername}",
-      sitelatitude  = "${var.sitelatitude}",
-      sitelongitude = "${var.sitelongitude}",
-      sitesshrsakey = "${tls_private_key.newkey.private_key_pem}"
+  dynamic network_interface {
+    for_each = var.f5xc_ce_gateway_multi_nic ? [aws_network_interface.inside_map] : []
+    content { 
+      network_interface_id = aws_network_interface.inside_map["${each.key}"].id
+      device_index         = 1
     }
-  )
-
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce2_outside[0].id
-    device_index         = 0
-  }
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce2_inside[0].id
-    device_index         = 1
   }
   tags = {
-    Name                                       = "${var.project_prefix}-master-1"
-    "kubernetes.io/cluster/${var.clustername}" = "owned"
-    ves-io-site-name                           = "${var.clustername}"
-  }
-}
-
-resource "aws_instance" "f5xc_ce3" {
-  count                = var.f5xc_ce_gateway_multi_node ? 1 : 0
-  ami                  = var.amis[var.aws_region]
-  instance_type        = var.instance_type
-  iam_instance_profile = aws_iam_instance_profile.f5xc_profile.name
-
-  root_block_device {
-    volume_size = var.instance_disk_size
-    volume_type = "gp3"
-  }
-  get_password_data = false
-  monitoring        = false
-  availability_zone = var.az3
-
-  user_data_replace_on_change = true
-  user_data = templatefile("${path.module}/cloud_init.yaml.template",
-    {
-      sitetoken     = "${var.sitetoken}",
-      clustername   = "${var.clustername}",
-      sitelatitude  = "${var.sitelatitude}",
-      sitelongitude = "${var.sitelongitude}",
-      sitesshrsakey = "${tls_private_key.newkey.private_key_pem}"
-    }
-  )
-
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce3_outside[0].id
-    device_index         = 0
-  }
-  network_interface {
-    network_interface_id = aws_network_interface.f5xc_ce3_inside[0].id
-    device_index         = 1
-  }
-  tags = {
-    Name                                       = "${var.project_prefix}-master-2"
+    Name = "${var.project_prefix}-${each.key}-${random_id.buildSuffix.hex}"
     "kubernetes.io/cluster/${var.clustername}" = "owned"
     ves-io-site-name                           = "${var.clustername}"
   }
