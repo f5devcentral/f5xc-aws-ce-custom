@@ -176,7 +176,7 @@ resource "aws_network_interface" "outside_map" {
 resource "aws_eip" "outside_eip_map" {
   for_each = {
     for k, v in var.ce_settings : k => v
-    if var.f5xc_ce_gateway_multi_nic 
+    if var.f5xc_ce_assign_eip
   }
   domain                    = "vpc"
   network_interface         = aws_network_interface.outside_map["${each.key}"].id
